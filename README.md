@@ -1,0 +1,2 @@
+# ijmCollection
+ImageJ macro collection
