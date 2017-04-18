@@ -1,9 +1,16 @@
 macro "Split LIF" {
+	// clear the log
+	print("\\Clear");
+	
     // ask user for file if no option is passed in
     path = File.openDialog("Choose a File");
 
     // use file name as directory name
-    dir = File.nameWithoutExtension(path);
+    file = File.getName(path);
+    index = indexOf(file, ".");
+    dir = substring(file, 0, index);
+    // update the directory location
+    dir = File.getParent(path) + File.separator + dir;
     // check the existance
     if (File.exists(dir)) {
         exit("Output directory exists")
@@ -13,19 +20,18 @@ macro "Split LIF" {
     if (!File.exists(dir)) {
         exit("Unable to create directory");
     }
-    // update the directory location
-    dir = File.getParent(path) + File.separator + dir;
 
     setBatchMode(true);
     start = getTime();
 
     // open the file
-    print("Reading \"" + File.getName(path) + "\"");
+    print("Reading \"" + file + "\"");
     run("Bio-Formats Windowless Importer", "open=[" + path + "]");
 
     // ensure we have processed all the series
     series = nImages();
     print(" - Series: " + series);
+    print("\n");
 
     for (i = 1; i <= series; i++) {
         // select specific series
@@ -33,14 +39,14 @@ macro "Split LIF" {
         print("Series " + i);
 
         // get the dimension info
-        getDimensions(width, height, channels, slices, frames)
+        getDimensions(width, height, channels, slices, frames);
         print(" - Size: " + width + "x" + height);
         print(" - Channels: " + channels);
         print(" - Slices: " + slices);
         print(" - Frames: " + frames);
 
         // re-arrange the channels
-        print("Re-arranging dimensions...")
+        print("Re-arranging dimensions...");
         run("Hyperstack to Stack");
         run("Stack to Hyperstack...", "order=xyzct channels=" + channels + " slices=" + slices + " frames=" + frames);
 
@@ -49,17 +55,18 @@ macro "Split LIF" {
             print("Splitting frame " + t);
 
             run("Make Substack...", "slices=1-" + slices + " frames=" + t);
-            run("Save", "save=" + dir + File.separator + "t" + t + ".tif");
+            run("Save", "save=[" + dir + File.separator + "s" + i + "_t" + t + ".tif]");
             close();
         }
 
         close();
+        print("\n");
     }
 
     end = getTime();
     setBatchMode(false);
 
     interval = (end-start)/1000;
-    print("\t" + interval + "s elapsed");
+    print("Done, " + interval + "s elapsed");
     print("\n");
 }
