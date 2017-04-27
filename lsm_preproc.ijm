@@ -1,6 +1,6 @@
 macro "LSM PreProcess" {
-	print("\\Clear");
-	run("Close All");
+    print("\\Clear");
+    run("Close All");
 
     // select a folder
     dir = getDirectory("Choose a Directory");
@@ -20,7 +20,7 @@ macro "LSM PreProcess" {
 
     rescaleFactor = zInterval/pixelSize;
 
-	setBatchMode(true);
+    setBatchMode(true);
 	
     dimension = openAsLinearStack(dir);
     processLinearStack(dir, dimension, rescaleFactor);
@@ -67,7 +67,7 @@ function listTiffFiles(dir) {
 function analyzeDimension(fileList) {
     channels = updateChannels(fileList);
 
-	// update slices, rest of the variables are dummies
+    // update slices, rest of the variables are dummies
     getDimensions(w, h, c, slices, f);
 
     // update frame count
@@ -95,8 +95,8 @@ function updateChannels(fileList) {
 }
 
 function getFilename(name) {
-	dotIndex = indexOf(name, ".");
-	return substring(name, 0, dotIndex);
+    dotIndex = indexOf(name, ".");
+    return substring(name, 0, dotIndex);
 }
 
 function processLinearStack(dir, dimension, rescaleFactor) {
@@ -111,23 +111,23 @@ function processLinearStack(dir, dimension, rescaleFactor) {
     // ask for color sequence
     run("Arrange Channels...");
 
-	// rename the primary image source
+    // rename the primary image source
     rename("Hyperstack");
 
     // perform the projections
     selectWindow("Hyperstack");
-	print("Generating XY view");
+    print("Generating XY view");
     xyMIP();
     path = generateOutputTiffPath(dir, "xy");
     saveAs("Tiff", path);
     
-	selectWindow("Hyperstack");
+    selectWindow("Hyperstack");
     print("Generating XZ view");
     xzMIP(rescaleFactor);
     path = generateOutputTiffPath(dir, "xz");
     saveAs("Tiff", path);
     
-	selectWindow("Hyperstack");
+    selectWindow("Hyperstack");
     print("Generating YZ view");
     yzMIP(rescaleFactor);
     path = generateOutputTiffPath(dir, "yz");
@@ -151,11 +151,11 @@ function xzMIP(rescaleFactor) {
     rename("Project");
     run("Scale...", "x=1.0 y=" + rescaleFactor + " z=1.0 interpolation=Bilinear average create title=XZ Projection");
 
-	// cleanup intermediate images
-	close("Reslice");
-	close("Project");
+    // cleanup intermediate images
+    close("Reslice");
+    close("Project");
 
-	// show the result
+    // show the result
     setBatchMode("show");
 }
 
@@ -166,11 +166,11 @@ function yzMIP(rescaleFactor) {
     rename("Project");
     run("Scale...", "x=" + rescaleFactor + " y=1.0 z=1.0 interpolation=Bilinear average create title=YZ Projection");
 
-	// cleanup intermediate images
-	close("Reslice");
-	close("Project");
+    // cleanup intermediate images
+    close("Reslice");
+    close("Project");
 
-	// show the result
+    // show the result
     setBatchMode("show");
 }
 
