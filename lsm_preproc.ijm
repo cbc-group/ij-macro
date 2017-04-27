@@ -11,8 +11,8 @@ macro "LSM PreProcess" {
 
     // dialog
     Dialog.create("Parameters");
-    Dialog.addNumber("Pixel size (nm):", pixelSize);
-    Dialog.addNumber("Z interval (nm):", zInterval);
+    Dialog.addNumber("Pixel size (um):", pixelSize);
+    Dialog.addNumber("Z interval (um):", zInterval);
     Dialog.show();
     // extract variables
     pixelSize = Dialog.getNumber();
